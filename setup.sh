@@ -1,4 +1,4 @@
-#!/bin/sh -ux
+#!/bin/sh -u
 #
 # (c) 2020 Yoichi Tanibayashi
 #
@@ -6,7 +6,7 @@
 ##############################################################################
 MYNAME=`basename $0`
 MYDIR=`dirname $0`
-echo "MYNAME=$MYDIR"
+echo "MYDIR=$MYDIR"
 cd $MYDIR
 echo "===" `pwd`
 

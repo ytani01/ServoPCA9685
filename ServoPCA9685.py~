@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+#
+# (c) 2020 Yoichi Tanibayashi
+#
+"""
+Control servo motor via PCA9685
+"""
+__author__ = 'Yoichi Tanibayashi'
+__data__   = '2020'
+
+import Adafruit_PCA9685
+import click
+from MyLogger import get_logger
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+
+class ServoPCA9685:
+    _log = get_logger(__name__, False)
+
+    def __init__(self, debug=False):
+        self._dbg = debug
+        __class__._log = get_logger(__class__.__name__, self._dbg)
+        self._log.debug('')
+
+
+class SampleApp:
+    _log = get_logger(__name__, False)
+
+    def __init__(self, channel, debug=False):
+        self._dbg = debug
+        __class__._log = get_logger(__class__.__name__, self._dbg)
+        self._log.debug('channel=%s', channel)
+
+
+@click.command(context_settings=CONTEXT_SETTINGS, help='''
+Test Program of ServoPCA9685 class''')
+@click.argument('channel', nargs=-1)
+@click.options('--debug', '-d', debug, is_flag=True, default=False,
+               help='debug flag')
+def main(channel, debug):
+    _log = get_logger(__name__, debug)
+    _log.debug('channel=%s', channel)
+
+    app = SampleApp(channel, debug=debug)
+    try:
+        app.main()
+    finally:
+        _log.debug('end')
+
+
+if __name__ == "__main__":
+    main()
+
