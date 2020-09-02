@@ -1,5 +1,11 @@
 # I2C Servo Motor Driver PCA9685
 
+# TODO
+
+* pigpioに切り替える
+[pigpio/Examples/Python code](http://abyz.me.uk/rpi/pigpio/examples.html#Python%20code)
+
+
 ## 1. install
 
 ### 1.1 create python3 virtualenv
