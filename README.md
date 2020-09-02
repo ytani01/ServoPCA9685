@@ -16,9 +16,9 @@ $ . bin/activate
 ```bash
 $ cd ~/env1
 
-$ git clone git@github.com:ytani01/music-box.git
+$ git clone git@github.com:ytani01/servo-PCA9685.git
 or 
-$ git clone https://github.com/ytani01/music-box.git
+$ git clone https://github.com/ytani01/servo-PCA9685.git
 ```
 
 ### 1.3 execute setup.sh
