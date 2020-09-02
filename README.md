@@ -2,7 +2,7 @@
 
 # TODO
 
-* pigpioに切り替える
+* pigpio版に切り替える
 [pigpio/Examples/Python code](http://abyz.me.uk/rpi/pigpio/examples.html#Python%20code)
 
 
