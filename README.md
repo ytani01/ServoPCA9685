@@ -1,8 +1,8 @@
-# Music Box
+# I2C Servo Motor Driver PCA9685
 
-## install
+## 1. install
 
-### python3 virtualenv
+### 1.1 create python3 virtualenv
 
 ```bash
 $ cd
@@ -11,7 +11,7 @@ $ cd env1
 $ . bin/activate
 ```
 
-### clone git repository
+### 1.2 clone git repository
 
 ```bash
 $ cd ~/env1
@@ -21,10 +21,18 @@ or
 $ git clone https://github.com/ytani01/music-box.git
 ```
 
-### setup.sh
+### 1.3 execute setup.sh
 
 ```bash
 $ cd ~/env1/music-box
 $ . ../bin/activate
 $ ./setup.sh
+```
+
+## 2. sample
+
+see usage
+
+```bash
+$ ./ServoPCA9685.py -h
 ```

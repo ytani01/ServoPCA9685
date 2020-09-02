@@ -9,6 +9,7 @@ __author__ = 'Yoichi Tanibayashi'
 __data__   = '2020'
 
 import Adafruit_PCA9685
+import random
 import time
 import click
 from MyLogger import get_logger
@@ -50,8 +51,10 @@ class ServoPCA9685:
 
         i = 0
         for p in self._pwm:
+            '''
             msg = 'channel[%d]=%s, pwm=%s' % (i, self._ch[i], p)
             print(msg)
+            '''
             self._dev.set_pwm(self._ch[i], 0, p)
             i += 1
 
@@ -67,6 +70,7 @@ class SampleApp:
         self._ch = []
         for c in channel:
             self._ch.append(int(c))
+        print('_ch=%s' % self._ch)
 
         self._interval = interval
 
@@ -77,19 +81,17 @@ class SampleApp:
         self._log.debug('')
 
         while True:
-            pwm = [ServoPCA9685.PWM_MAX] * len(self._ch)
-            self._log.debug('pwm=%s', pwm)
-            self._servo.set_pwm(pwm)
-            time.sleep(self._interval)
-
-            pwm = [ServoPCA9685.PWM_MIN] * len(self._ch)
-            self._log.debug('pwm=%s', pwm)
+            pwm = []
+            for c in self._ch:
+                pwm.append(random.randint(ServoPCA9685.PWM_MIN,
+                                          ServoPCA9685.PWM_MAX))
+            print('pwm=%s' % pwm)
             self._servo.set_pwm(pwm)
             time.sleep(self._interval)
 
 
 @click.command(context_settings=CONTEXT_SETTINGS, help='''
-Test Program of ServoPCA9685 class''')
+Test Program for ServoPCA9685 class''')
 @click.argument('channel', nargs=-1)
 @click.option('--interval', '-i', 'interval', type=float, default=1.0,
               help='interval sec')
