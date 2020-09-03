@@ -35,7 +35,7 @@ $ . ../bin/activate
 $ ./setup.sh
 ```
 
-## 2. sample
+## 2. sample and usage
 
 see usage
 
