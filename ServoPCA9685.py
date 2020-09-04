@@ -39,11 +39,19 @@ class ServoPCA9685:
         self._dev.set_frequency(50)
         self._active = True
 
-        self._pwm = [self.PWM_CENTER] * len(self._ch)
+        self._pwm = [0] * len(self._ch)  # all off
+
+    def __str__(self):
+        str_val = ""
+        for i, p in enumerate(self._pwm):
+            str_val += 'ch[%d]:%d, ' % (self._ch[i], p)
+
+        str_val = str_val.rstrip(', ')
+        return str_val
 
     def set_pwm(self, pwm):
         """
-        pwm: PWM_MIN .. PWM_MAX
+        pwm: list of pulse widths
         """
         self._log.debug('pwm=%s', pwm)
 
@@ -54,19 +62,27 @@ class ServoPCA9685:
         self._pwm = pwm
 
         for i, p in enumerate(self._pwm):
-            self._log.debug('_ch[%d]=%s, pwm=%s',
-                            i, self._ch[i], p)
-            if p < ServoPCA9685.PWM_MIN:
-                p = ServoPCA9685.PWM_MIN
-            if p > ServoPCA9685.PWM_MAX:
-                p = ServoPCA9685.PWM_MAX
+            if p != 0:
+                if p < ServoPCA9685.PWM_MIN:
+                    p = ServoPCA9685.PWM_MIN
+                if p > ServoPCA9685.PWM_MAX:
+                    p = ServoPCA9685.PWM_MAX
 
             self._dev.set_pulse_width(self._ch[i], p)
 
+    def all_off(self):
+        self._log.debug('')
+
+        self._dev.set_pulse_width(-1, 0)
+
     def end(self):
         self._log.debug('')
+        self.all_off()
+        time.sleep(0.5)
+
         if self._active:
             self._dev.cancel()
+            self._active = False
 
 
 import time
@@ -92,7 +108,9 @@ class SampleApp:
         self._random = random
 
         if self._pwm_min > self._pwm_max:
-            (self._pwm_min, self._pwm_max) = (self._pwm_min, self._pwm_max)
+            self._log.warning('pwm_min(%s) > pwm_mzx(%s): swap',
+                              self._pwm_min, self._pwm_max)
+            (self._pwm_min, self._pwm_max) = (self._pwm_max, self._pwm_min)
 
         self._pwm_center = int((self._pwm_min + self._pwm_max) / 2)
 
@@ -101,9 +119,7 @@ class SampleApp:
             exit(0)
 
         self._servo = ServoPCA9685(self._pi, self._ch, self._dbg)
-
-        self._servo.set_pwm([ServoPCA9685.PWM_CENTER] * len(self._ch))
-        time.sleep(1)
+        print(self._servo)
 
     def main(self):
         self._log.debug('')
@@ -120,9 +136,8 @@ class SampleApp:
                 else:
                     pwm = [self._pwm_max] * len(self._ch)
 
-            self._log.debug('pwm=%s', pwm)
-
             self._servo.set_pwm(pwm)
+            self._log.debug('_servo=%s', self._servo)
 
             count += 1
             time.sleep(self._interval)
@@ -146,7 +161,7 @@ Test Program for ServoPCA9685''')
 @click.option('--pwm_min', '-min', 'pwm_min', type=int,
               default=ServoPCA9685.PWM_MIN,
               help='min pwm value')
-@click.option('--pwm_max', '-min', 'pwm_max', type=int,
+@click.option('--pwm_max', '-max', 'pwm_max', type=int,
               default=ServoPCA9685.PWM_MAX,
               help='max pwm value')
 @click.option('--random', '-r', 'random', is_flag=True, default=False,
