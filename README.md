@@ -1,12 +1,9 @@
 # I2C Servo Motor Driver PCA9685
 
-# TODO
-
-* pigpio版に切り替える
-[pigpio/Examples/Python code](http://abyz.me.uk/rpi/pigpio/examples.html#Python%20code)
+pigpio版、PCA9685用ライブラリ
 
 
-## 1. install
+## 1. INSTALL
 
 ### 1.1 create python3 virtualenv
 
@@ -35,10 +32,15 @@ $ . ../bin/activate
 $ ./setup.sh
 ```
 
-## 2. sample and usage
+## 2. SAMPLE and USAGE
 
 see usage
 
 ```bash
 $ ./ServoPCA9685.py -h
 ```
+
+
+## A. 参考
+
+* [pigpio/Examples/Python code](http://abyz.me.uk/rpi/pigpio/examples.html#Python%20code)
