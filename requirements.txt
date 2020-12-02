@@ -1,3 +1,2 @@
 pigpio
-adafruit-pca9685
 click

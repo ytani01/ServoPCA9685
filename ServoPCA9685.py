@@ -93,7 +93,8 @@ class SampleApp:
     _log = get_logger(__name__, False)
 
     def __init__(self, channel=[], interval=1.0,
-                 pwm_min=ServoPCA9685.PWM_MIN, pwm_max=ServoPCA9685.PWM_MAX,
+                 pwm_min=ServoPCA9685.PWM_MIN,
+                 pwm_max=ServoPCA9685.PWM_MAX,
                  random=False, debug=False):
         self._dbg = debug
         __class__._log = get_logger(__class__.__name__, self._dbg)
