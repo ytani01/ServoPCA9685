@@ -1,6 +1,6 @@
-# I2C Servo Motor Driver for PCA9685
+# Python3 library for I2C Servo Motor Driver PCA9685
 
-サーボモータードライバ PCA9685 Python3ライブラリ
+サーボモータードライバ PCA9685用 Python3ライブラリ
 
 ## ServoPCA9685
 
