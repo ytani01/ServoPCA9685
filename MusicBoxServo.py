@@ -35,8 +35,8 @@ class MusicBoxServo:
     DEF_CONF_DIR   = "/home/pi"
     DEF_CONFFILE   = DEF_CONF_DIR + '/' + DEF_CONF_FNAME
 
-    DEF_ON_INTERVAL  = 1.5  # sec
-    DEF_OFF_INTERVAL = 0.5  # sec
+    DEF_ON_INTERVAL  = 0.1  # sec
+    DEF_OFF_INTERVAL = 0.2  # sec
 
     DEF_SERVO_N      = 15
 
@@ -239,6 +239,10 @@ class Sample:
             prompt = '[0-%s, ..]> ' % (self.servo.servo_n - 1)
             try:
                 line1 = input(prompt)
+            except EOFError as e:
+                # self.__log.error('%s:%s', type(e), e)
+                self.__log.info('EOF')
+                break
             except Exception as e:
                 self.__log.error('%s:%s', type(e), e)
                 continue
