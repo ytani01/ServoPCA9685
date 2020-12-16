@@ -6,8 +6,8 @@
 Rotation Motor driver for Music Box
 
 
-Usage
------
+Simple Usage (1): single thread
+---
 from MusicBoxServo import MusicBoxServo
  :
 servo = MusicBoxServo()
@@ -15,7 +15,20 @@ servo = MusicBoxServo()
 servo.tap([0, 2, 4])  # list of channel numbers
  :
 servo.end()
------
+---
+
+Simple Usage (2): multi thread
+---
+from MusicBoxServo import MusicBoxServo
+import threading
+ :
+servo = MusicBoxServo()
+ :
+th = threading.Thread(targe=servo.tap, args=([0, 2, 4],))
+th.start()
+ :
+servo.end()
+---
 """
 __author__ = 'FabLab Kannai'
 __date__   = '2020/12'
@@ -32,17 +45,19 @@ class MusicBoxServo:
     __log = get_logger(__name__, False)
 
     DEF_CONF_FNAME = "music-box-servo.conf"
-    DEF_CONF_DIR   = "/home/pi"
-    DEF_CONFFILE   = DEF_CONF_DIR + '/' + DEF_CONF_FNAME
+    DEF_CONF_DIR = "/home/pi"
+    DEF_CONFFILE = DEF_CONF_DIR + '/' + DEF_CONF_FNAME
 
-    DEF_ON_INTERVAL  = 0.1  # sec
+    DEF_ON_INTERVAL = 0.2  # sec
     DEF_OFF_INTERVAL = 0.2  # sec
 
-    DEF_SERVO_N      = 15
+    DEF_SERVO_N = 15
 
-    VAL_CENTER     = 1500
+    PW_CENTER = 1500
+    PW_OFF = 0
+    PW_NOP = -1
 
-    ON_CHR         = 'oO*'
+    ON_CHR = 'oO*'
 
     def __init__(self, conf_file=DEF_CONFFILE,
                  on_interval=DEF_ON_INTERVAL,
@@ -76,16 +91,16 @@ class MusicBoxServo:
 
         self.pi = pigpio.pi()
 
-        self.on = [self.VAL_CENTER] * self.servo_n
-        self.off = [self.VAL_CENTER] * self.servo_n
+        self.on = [self.PW_CENTER] * self.servo_n
+        self.off = [self.PW_CENTER] * self.servo_n
         self.__log.debug('on=%s', self.on)
         self.__log.debug('off=%s', self.off)
 
         self.load_conf(self.conf_file)
 
-        self.servo = ServoPCA9685(self.pi, list(range(self.servo_n)),
+        self.servo = ServoPCA9685(list(range(self.servo_n)), self.pi,
                                   debug=self._dbg)
-        self.pull()
+        self.pull(list(range(self.servo_n)))
 
     def end(self):
         """終了処理
@@ -166,47 +181,70 @@ class MusicBoxServo:
 
         Parameters
         ----------
-        ch: list of str
-            チャンネル番号: 0..15
+        ch: list of int
+            チャンネル番号: 0 .. self.servo_n-1
         """
         self.__log.debug('ch=%s', ch)
 
         self.push(ch)
         time.sleep(self.on_interval)
-        self.pull()
+        self.pull(ch)
         time.sleep(self.off_interval)
 
-    def push(self, ch):
-        """指定されたチャンネルのピンを押す
+    def push_pull(self, push_flag, ch):
+        """
+        指定されたチャンネルのピンを push or pull
 
         Parameters
         ----------
-        ch: int
+        push_flag: bool
+            true:  push
+            false: pull
+        ch: list of int
+            チャンネル番号: 0 .. servo_n-1
+        """
+        self.__log.debug('push_flag=%s, ch=%s', push_flag, ch)
+        for c in ch:
+            if c < 0 or c >= self.servo_n:
+                msg = 'invalid channel number:%s.' % (c)
+                msg += ' specify 0 .. %s' % (self.servo_n - 1)
+                raise ValueError(msg)
+
+        pw = [self.PW_OFF] * self.servo_n
+        for c in range(self.servo_n):
+            pw[c] = self.PW_NOP
+            if c in ch:
+                if push_flag:
+                    pw[c] = self.on[c]
+                else:
+                    pw[c] = self.off[c]
+
+        self.__log.debug('pw=%s', pw)
+        self.servo.set_pw(pw)
+
+    def push(self, ch):
+        """
+        指定されたチャンネルのピンを押す
+
+        Parameters
+        ----------
+        ch: list of int
             チャンネル番号: 0 .. servo_n-1
         """
         self.__log.debug('ch=%s', ch)
-        for c in ch:
-            if c < 0 or c >= self.servo_n:
-                raise ValueError('invalid channel number.' +
-                                 'specify 0 .. %s' % (self.servo_n-1))
+        self.push_pull(True, ch)
 
-        on_list = [self.on[c] for c in ch]
-        self.__log.debug('on_list=%s', on_list)
-
-        pwm = [0] * self.servo_n
-        for c in range(self.servo_n):
-            pwm[c] = self.off[c]
-            if c in ch:
-                pwm[c] = self.on[c]
-
-        self.__log.debug('pwm=%s', pwm)
-        self.servo.set_pwm(pwm)
-
-    def pull(self):
-        """全チャンネルのピンを引く
+    def pull(self, ch):
         """
-        self.__log.debug('')
-        self.servo.set_pwm(self.off)
+        指定されたチャンネルのピンを引く
+
+        Parameters
+        ----------
+        ch: list of int
+            チャンネル番号: 0 .. servo_n-1
+        """
+        self.__log.debug('ch=%s', ch)
+        self.push_pull(False, ch)
 
 
 """ 以下、サンプル・コード """
@@ -239,12 +277,11 @@ class Sample:
             prompt = '[0-%s, ..]> ' % (self.servo.servo_n - 1)
             try:
                 line1 = input(prompt)
-            except EOFError as e:
-                # self.__log.error('%s:%s', type(e), e)
+            except EOFError:
                 self.__log.info('EOF')
                 break
-            except Exception as e:
-                self.__log.error('%s:%s', type(e), e)
+            except Exception as ex:
+                self.__log.error('%s:%s', type(ex), ex)
                 continue
             self.__log.debug('line1=%a', line1)
 
@@ -261,13 +298,16 @@ class Sample:
             else:
                 try:
                     ch = [int(s) for s in ch_str]
-                except Exception as e:
-                    self.__log.error('%s: %s', type(e), e)
+                except Exception as ex:
+                    self.__log.error('%s: %s .. ignored', type(ex), ex)
                     continue
 
             self.__log.debug('ch=%s', ch)
 
-            self.servo.tap(ch)
+            try:
+                self.servo.tap(ch)
+            except ValueError as ex:
+                self.__log.error("%s: %s .. ignored", type(ex), ex)
 
     def end(self):
         self.__log.debug('')
