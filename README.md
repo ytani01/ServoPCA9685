@@ -67,9 +67,3 @@ $ ./ServoPCA9685.py -h
 ## A. 参考
 
 * [pigpio/Examples/Python code](http://abyz.me.uk/rpi/pigpio/examples.html#Python%20code)
-
-## B. temp memo
-
-```bash
-$ ./ServoPCA9685-2.py -min 1200 -max 1600 -i 1.5  7 8 9
-```
