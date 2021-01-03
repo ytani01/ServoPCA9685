@@ -2,8 +2,7 @@
 
 サーボモータードライバ PCA9685用 Python3ライブラリ
 
-## ServoPCA9685
-
+* PCA9685用
 * 複数のサーボを同時に制御できる。
 
 
@@ -15,52 +14,34 @@
 * プログラミング言語: Python3
 * GPIO制御ライブラリ: pigpio
 
-## 0. TL;DR
+## TL;DR
 
+Install
 ```bash
 $ cd ~
 $ python3 -m venv env1
 $ cd env1
 $ . ./bin/activate
+
 (env1)$ git clone https://github.com/ytani01/ServoPCA9685.git
 (env1)$ cd ServoPCA9685
-(env1)$ pip3 install -r requirements.txt
+
+(env1)$ pip install -U pip setuptools wheel
+(env1)$ hash -r
+(env1)$ pip install .
+```
+
+Run [sample.py](sample.py)
+```bash
 (env1)$ sudo pigpiod
-(env1)$ ./ServoPCA9685.py -h
+(env1)$ ./sample.py
 ```
 
-## 1. INSTALL
 
-### 1.1 create python3 virtualenv
-
-```bash
-$ cd
-$ python3 -m venv env1
-$ cd env1
-$ . bin/activate
-```
-
-### 1.2 clone git repository
+## API
 
 ```bash
-$ cd ~/env1
-$ git clone https://github.com/ytani01/ServoPCA9685.git
-```
-
-### 1.3 execute setup.sh
-
-```bash
-$ cd ~/env1/music-box
-$ . ../bin/activate
-$ ./setup.sh
-```
-
-## 2. SAMPLE and USAGE
-
-see usage
-
-```bash
-$ ./ServoPCA9685.py -h
+python3 -m pydoc servoPCA9685
 ```
 
 
