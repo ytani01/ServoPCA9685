@@ -9,11 +9,10 @@
 # Public Domain
 ##############################################################################
 #
-# Modified: 2020 Yoichi Tanibayashi
+# Modified: 2021 Yoichi Tanibayashi
 
 import time
-import pigpio
-from MyLogger import get_logger
+from .my_logger import get_logger
 
 
 class PCA9685:
@@ -38,8 +37,6 @@ class PCA9685:
     The chip has 12 bit resolution, i.e. there are 4096 steps
     between off and full on.
     """
-
-    _log = get_logger(__name__, False)
 
     _MODE1         = 0x00
     _MODE2         = 0x01
@@ -66,7 +63,7 @@ class PCA9685:
 
     def __init__(self, pi, bus=1, address=0x40, debug=False):
         self._dbg = debug
-        __class__._log = get_logger(__class__.__name__, self._dbg)
+        self._log = get_logger(self.__class__.__name__, self._dbg)
         self._log.debug('bus=%d, address=0x%X', bus, address)
 
         self.pi = pi
