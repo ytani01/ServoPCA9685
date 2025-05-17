@@ -3,7 +3,7 @@
 import time
 from servoPCA9685 import Servo
 
-s = Servo()
+s = Servo(debug=True)
 
 s.set_pw([1500,1500,1500,1500,1500,1500,1500,1500,
           1500,1500,1500,1500,1500,1500,1500,1500])
